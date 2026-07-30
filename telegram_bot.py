@@ -61,7 +61,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if last_file:
        _, ext = os.path.splitext(last_file)
-    file_type = ext.lower()
+       file_type = ext.lower()
 
 
     # ---------------------------
@@ -137,9 +137,9 @@ Always read THIS exact file.
     except Exception as e:
         print(e)
 
-    ai_response = (
-        "Sorry, I couldn't complete the analysis.\n"
-        f"{str(e)}"
+        ai_response = (
+            "Sorry, I couldn't complete the analysis.\n"
+            f"{str(e)}"
     )
     
     # Save assistant reply
