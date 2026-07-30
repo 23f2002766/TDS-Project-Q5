@@ -222,13 +222,16 @@ async def start_bot():
     print("✅ Telegram Bot Started...")
 
     await app.initialize()
-
     await app.start()
-
     await app.updater.start_polling()
 
-    while True:
-        await asyncio.sleep(3600)
+    try:
+        while True:
+            await asyncio.sleep(3600)
+    finally:
+        await app.updater.stop()
+        await app.stop()
+        await app.shutdown()
 
 if __name__ == "__main__":
     main()
