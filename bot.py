@@ -12,6 +12,9 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup():
     await application.initialize()
+    await application.bot.set_webhook(
+        url=f"{os.getenv('BASE_URL')}/webhook"
+    )
 
 
 @app.on_event("shutdown")
