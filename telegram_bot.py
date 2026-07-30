@@ -1,3 +1,4 @@
+import asyncio
 from executor import run_python
 from memory import (
     add_message,
@@ -24,6 +25,7 @@ from logger import write_log
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+BASE_URL = os.getenv("BASE_URL")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -58,7 +60,7 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     file_type = None
 
     if last_file:
-        _, ext = os.path.splitext(last_file)
+       _, ext = os.path.splitext(last_file)
     file_type = ext.lower()
 
 
@@ -154,7 +156,7 @@ Always read THIS exact file.
 
     response = {
         "answer": ai_response,
-        "log_url": "http://127.0.0.1:8000/run.jsonl"
+        "log_url": f"{BASE_URL}/run.jsonl"
     }
 
     await update.message.reply_text(
@@ -194,12 +196,20 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
+    asyncio.run(start_bot())
+
+
+async def start_bot():
+
     app = Application.builder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
 
     app.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, echo)
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            echo
+        )
     )
 
     app.add_handler(
@@ -211,10 +221,14 @@ def main():
 
     print("✅ Telegram Bot Started...")
 
-    app.run_polling(
-    stop_signals=None
-)
+    await app.initialize()
 
+    await app.start()
+
+    await app.updater.start_polling()
+
+    while True:
+        await asyncio.sleep(3600)
 
 if __name__ == "__main__":
     main()
